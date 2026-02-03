@@ -1,70 +1,68 @@
-// Intersection Observer for Scroll Animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: "0px 0px -50px 0px"
+// Intersection Observer for Reveals
+const revealOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -100px 0px'
 };
 
-const observer = new IntersectionObserver((entries) => {
+const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('aos-animate');
         }
     });
-}, observerOptions);
+}, revealOptions);
 
-document.querySelectorAll('[data-aos]').forEach(el => observer.observe(el));
+document.querySelectorAll('[data-aos]').forEach(el => revealObserver.observe(el));
 
-// Smooth Scroll for Navigation Links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            window.scrollTo({
-                top: target.offsetTop - 80,
-                behavior: 'smooth'
-            });
+// Active Nav Link Tracking
+const sections = document.querySelectorAll('section');
+const navItems = document.querySelectorAll('.nav-item');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= sectionTop - 200) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href').slice(1) === current) {
+            item.classList.add('active');
         }
     });
 });
 
-// Navbar background change on scroll
-window.addEventListener('scroll', () => {
-    const nav = document.querySelector('nav');
-    if (window.scrollY > 50) {
-        nav.style.padding = '1rem 10%';
-        nav.style.background = 'rgba(5, 5, 5, 0.95)';
-    } else {
-        nav.style.padding = '1.5rem 10%';
-        nav.style.background = 'rgba(5, 5, 5, 0.8)';
-    }
-});
+// Magnetic Effect for Buttons
+const magneticElements = document.querySelectorAll('.btn');
 
-// Custom Cursor Tracking
-const cursor = document.querySelector('.custom-cursor');
-const dot = document.querySelector('.cursor-dot');
+magneticElements.forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
 
-document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-    dot.style.left = e.clientX + 'px';
-    dot.style.top = e.clientY + 'px';
-
-    // Parallax hero background
-    const hero = document.querySelector('.hero');
-    const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
-    const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
-    hero.style.backgroundPosition = `calc(50% + ${xAxis}px) calc(50% + ${yAxis}px)`;
-});
-
-// Cursor hover effects
-document.querySelectorAll('a, .glass, .cta-button').forEach(link => {
-    link.addEventListener('mouseenter', () => {
-        cursor.style.transform = 'scale(2.5)';
-        cursor.style.background = 'rgba(0, 212, 255, 0.1)';
+        el.style.transform = `translate(${x * 0.3}px, ${y * 0.5}px)`;
     });
-    link.addEventListener('mouseleave', () => {
-        cursor.style.transform = 'scale(1)';
-        cursor.style.background = 'transparent';
+
+    el.addEventListener('mouseleave', () => {
+        el.style.transform = `translate(0, 0)`;
+    });
+});
+
+// Smooth Scroll for Nav
+navItems.forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+
+        window.scrollTo({
+            top: targetElement.offsetTop,
+            behavior: 'smooth'
+        });
     });
 });
